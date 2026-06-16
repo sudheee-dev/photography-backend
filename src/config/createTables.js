@@ -59,15 +59,33 @@ const createTables = () => {
 
         location VARCHAR(255),
 
-        likes INT DEFAULT 0,
-
-        dislikes INT DEFAULT 0,
 
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
         FOREIGN KEY (user_id)
         REFERENCES users(id)
         ON DELETE CASCADE
+    )
+`;
+  const likesTable = `
+    CREATE TABLE IF NOT EXISTS likes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+
+        user_id INT NOT NULL,
+
+        post_id INT NOT NULL,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+        FOREIGN KEY (post_id)
+        REFERENCES posts(id)
+        ON DELETE CASCADE,
+
+        UNIQUE(user_id, post_id)
     )
 `;
 
@@ -90,6 +108,14 @@ const createTables = () => {
               console.log("Posts table error:", err);
             } else {
               console.log("Posts table ready ✅");
+
+              db.query(likesTable, (err) => {
+                if (err) {
+                  console.log("Likes table error:", err);
+                } else {
+                  console.log("Likes table ready ✅");
+                }
+              });
             }
           });
         }
